@@ -1,0 +1,192 @@
+# ╔══════════════════════════════════════════════════════════════════════════╗
+# ║                     TakeOutFilter  -  config.yml                         ║
+# ╚══════════════════════════════════════════════════════════════════════════╝
+# Flow: player types something blocked -> message is NOT sent -> sound + image play -> image disappears
+#       -> ban (shows the Sentient Anti-Cheat ban screen).   /takeout reload applies changes.
+
+# true = staff just get notified (nothing is cancelled, no sound, no ban). Use it to tune the lists safely first.
+dry-run: false
+
+# Commands whose text is also scanned (private messages etc). Names only, no slash.
+filter-commands: [msg, tell, w, whisper, r, reply, me, say, mail, pm, dm, m, t, emsg, etell, ewhisper]
+
+# Text that is removed before scanning, e.g. YOUR OWN server name / ip / discord so players can say it.
+ignored-text:
+  - "yourserver.example.com"
+
+# ─────────────────────────────── PUNISHMENT ───────────────────────────────
+punishment:
+  # Runs from console. Placeholders: %player% %duration% %reason%
+  # Default uses Sentient Anti-Cheat so the Sentient ban screen is shown.
+  ban-command: "sentient ban %player% %duration% %reason%"
+  unban-command: "sentient unban %player%"
+
+# ─────────────────────────────── SOUND + IMAGE ────────────────────────────
+effect:
+  enabled: true
+  sound: "takeout:disappointment"      # defined in the resource pack (sounds.json)
+  volume: 1.0
+  font: "takeout:image"                # font defined in the resource pack
+  glyph: "\uE000"                      # the character that draws the image
+  duration-ticks: 74                   # how long the image shows = length of the sound (3.53s -> 74 ticks). 20 ticks = 1 second
+
+# ─────────────────────────────── RESOURCE PACK ────────────────────────────
+# Upload TakeOutFilter-ResourcePack.zip somewhere with a DIRECT download link (GitHub Release asset works) and paste it.
+resource-pack:
+  enabled: true
+  url: ""
+  sha1: ""                             # leave empty: the plugin downloads the pack once and works the hash out itself
+  force: true                          # players must accept it
+  prompt: "<white>This server needs its resource pack to play."
+  kick-on: [DECLINED, FAILED_DOWNLOAD, INVALID_URL, FAILED_RELOAD, DISCARDED]
+  kick-message: "<red>You must accept the server resource pack to play."
+
+# ─────────────────────────────── /takeout test ────────────────────────────
+test:
+  ban-duration: "1m"                   # "/takeout test ban" bans YOU for this long (undo with /takeout unban <you>)
+  ban-reason: "TakeOutFilter test"
+
+# ─────────────────────────────── CATEGORIES ───────────────────────────────
+# Each category has its own ban length + reason. If a message matches several, the highest severity wins.
+#   words           whole words / phrases. Already tolerant of: capitals, leetspeak (j0in, s3rv3r), symbols (j.o.i.n),
+#                   spaced letters (j o i n), repeated letters (jooooin), accents, look-alike letters (cyrillic/greek/fullwidth)
+#   contains        matched INSIDE words and with spaces/symbols removed (catches "ni  gg3r", "xxniggerxx"). Use for strong terms only
+#   regex           your own regex, run on the cleaned text (lowercase letters + single spaces)
+#   regex-raw       your own regex, run on lowercase text that KEEPS symbols and digits (ips, domains, links)
+#   squashed-regex  your own regex, run on letters only with everything else removed ("joinmyserver")
+#   allowed-words   harmless words that must never trigger (they are removed before scanning)
+categories:
+
+  slurs:
+    enabled: true
+    severity: 3
+    ban-duration: "10d"
+    reason: "slur"
+    words:
+      - nigger
+      - niggers
+      - nigga
+      - niggas
+      - faggot
+      - faggots
+      - fag
+      - fags
+      - tranny
+      - trannies
+      - kike
+      - kikes
+      - spic
+      - spics
+      - chink
+      - chinks
+      - gook
+      - gooks
+      - wetback
+      - wetbacks
+      - coon
+      - coons
+      - dyke
+      - dykes
+      - beaner
+      - beaners
+      - towelhead
+      - retard
+      - retards
+      - retarded
+    contains:
+      - nigger
+      - faggot
+    regex: []
+    regex-raw: []
+    squashed-regex: []
+    allowed-words:
+      - snigger
+      - sniggers
+      - sniggered
+      - sniggering
+
+  bad_words:
+    enabled: true
+    severity: 2
+    ban-duration: "5d"
+    reason: "bad words"
+    words:
+      - dumbass
+      - dumb ass
+      - dipshit
+      - shithead
+      - shit head
+      - asshole
+      - ass hole
+      - bitch
+      - motherfucker
+      - mother fucker
+      - cunt
+      - fuck you
+      - fuck off
+      - fuck u
+      - stfu
+      - kys
+      - kill yourself
+      - go kill yourself
+      - piece of shit
+      - son of a bitch
+      - fucking idiot
+      - fucking moron
+      - fucking stupid
+      - stupid fuck
+      - stupid ass
+      - jackass
+      - dickhead
+      - dick head
+      - bastard
+    contains:
+      - motherfucker
+    regex:
+      - '(?<![a-z])(?:fucking|fuckin|fcking|fking|f+u+c+k+i+n+g*)\s+(?:idiots?|morons?|losers?|imbeciles?|noobs?|clowns?|trash|garbage|dumbasses|assholes?|bitch(?:es)?)(?![a-z])'
+    regex-raw: []
+    squashed-regex: []
+    allowed-words: []
+
+  promotion:
+    enabled: true
+    severity: 1
+    ban-duration: "3d"
+    reason: "self promotion"
+    words:
+      - ip address
+      - server ip
+      - my ip
+      - our ip
+    contains: []
+    regex:
+      # "join my server", "come play on our new smp", "check out my cool server", "visit my network"
+      - '\b(?:join|joining|joined|come|visit|try|play|check|checkout|hop)(?: out)?(?: (?:on|in|to|at|onto|into|by|over))? (?:my|our|this|new|best|cool|free|top|awesome|great|epic|real)(?: (?:new|best|cool|free|awesome|great|epic|good|vanilla|survival|minecraft|mc|pvp|op|public|lifesteal|factions|skyblock|prison|smp|network|amazing|favorite))* (?:server|serv|srv|smp|realm|network|ip|community)\b'
+      # "join my discord" (only MY - players often say "join our discord" about this server's own discord)
+      - '\b(?:join|joining|check|visit)(?: out)? my (?:discord|dc|guild)\b'
+      # "you should join <server name>", "everyone must join donutsmp"  (not "join me / join us / join the team ...")
+      - '\b(?:should|must|need to|needa|gotta|have to|better|wanna|want to|ought to)(?: all)?(?: really)? (?:join|joining) (?!(?:me|us|my|our|in|up|the|a|an|this|that|these|those|his|her|their|your|team|clan|party|faction|town|first|too|with|back|along|together|now|later|soon)\b)[a-z0-9]+'
+      # "join <name>smp / <name>craft / <name>network"
+      - '\bjoin(?:ing)? [a-z0-9]*(?:smp|craft|network|realm|pvp|lifesteal|mc)\b'
+      # "my server is ...", "our smp has ..."
+      - '\bmy(?: (?:new|cool|best|own|minecraft|mc|survival|pvp|vanilla))* (?:server|smp|realm|network) (?:is|has|ip|called|named|here|name)\b'
+      - '\b(?:server|smp|realm) (?:ip|address)\b'
+      # giveaways
+      - '\b(?:free|giving away|giveaway)(?: \w+)? (?:rank|ranks|vip|op|admin|robux|nitro)\b'
+      # socials / self promotion
+      - '\b(?:sub|subscribe|follow|like)(?: and (?:sub|subscribe|follow))?(?: to)? (?:me|my)\b'
+      - '\b(?:check|watch|see|visit)(?: out)? my (?:youtube|yt|twitch|tiktok|stream|channel|video|vid|insta|instagram|ig|twitter|discord|dc|server|smp|website|site|ip|link|profile)\b'
+      - '\bmy (?:youtube|yt|twitch|tiktok|channel|stream|discord|dc|ip)\b'
+    regex-raw:
+      # ip addresses
+      - '\b\d{1,3}(?:\.\d{1,3}){3}(?::\d{2,5})?\b'
+      # domains / links: mc.example.net, example(dot)gg, play.example.com:25565
+      - '\b[a-z0-9-]{2,}\s*(?:\.|\(dot\)|\[dot\]|\sdot\s)\s*(?:com|net|org|gg|io|co|me|xyz|fun|host|minehut|aternos|playit|us|eu|tv|cc|pro|club|world|lol|online|site|top|ly|link)\b(?:\s*:\s*\d{2,5})?'
+      # discord invites
+      - 'discord\s*(?:\.|\sdot\s)\s*gg|discord\s*\.?\s*com\s*/\s*invite|dsc\s*\.\s*gg|discord\s*\.\s*me'
+      - '(?:https?://|www\.)\S+'
+    squashed-regex:
+      # catches j-o-i-n m_y s.e.r.v.e.r with all the symbols removed
+      - '(?:join|visit|try|play|check|come)(?:out|on|in|to)?(?:my|our|this|new|best)(?:new|best|cool|free)?(?:server|smp|realm|network|ip)'
+      - '(?:my|our)(?:new)?(?:server|smp)(?:is|ip|called)'
+    allowed-words: []

@@ -1,0 +1,25 @@
+name: TakeOutFilter
+prefix: TakeOutFilter
+version: '${project.version}'
+main: me.sentient.takeout.TakeOutPlugin
+api-version: '1.21'
+authors: [ SentientTeam ]
+description: Chat filter for slurs, bad words and server promotion (obfuscation proof). Plays a sound + image, then bans.
+softdepend: [ SentientAntiCheat ]
+
+commands:
+  takeout:
+    description: TakeOutFilter admin command
+    usage: /takeout <test [ban [category]]|unban <player>|check <text>|pack [player]|reload>
+    permission: takeout.admin
+
+permissions:
+  takeout.admin:
+    description: Use /takeout
+    default: op
+  takeout.notify:
+    description: See filter notifications
+    default: op
+  takeout.bypass:
+    description: Never filtered
+    default: false

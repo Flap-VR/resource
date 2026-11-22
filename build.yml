@@ -1,0 +1,55 @@
+name: Build TakeOutFilter
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build plugin jar
+        run: mvn -B -ntp clean package
+
+      - name: Zip the resource pack (pack.mcmeta must be at the zip root)
+        run: cd resourcepack && zip -r -X ../TakeOutFilter-ResourcePack.zip .
+
+      - name: Upload plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: TakeOutFilter-plugin
+          path: target/TakeOutFilter-*.jar
+          if-no-files-found: error
+
+      - name: Upload resource pack
+        uses: actions/upload-artifact@v4
+        with:
+          name: TakeOutFilter-ResourcePack
+          path: TakeOutFilter-ResourcePack.zip
+          if-no-files-found: error
+
+      # Push a tag like v1.0.0 and BOTH files appear on a GitHub Release. The release download link of the
+      # resource pack zip is what you paste into config.yml -> resource-pack.url
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            target/TakeOutFilter-*.jar
+            TakeOutFilter-ResourcePack.zip
+          generate_release_notes: true

@@ -1,0 +1,19 @@
+prefix: "<dark_gray>[<red>TakeOut</red><dark_gray>] <gray>"
+
+# staff notification (permission takeout.notify). <message> is the full text the player typed.
+notify: "<white><player> <gray>triggered <yellow><category> <gray>(matched <white><match><gray>) <dark_gray>» <gray><message>"
+notify-dry: "<yellow>[DRY RUN] <white><player> <gray>would have been punished for <yellow><category> <gray>(matched <white><match><gray>) <dark_gray>» <gray><message>"
+
+no-permission: "<red>You do not have permission."
+players-only: "<red>Only players can use this."
+reloaded: "<green>TakeOutFilter reloaded."
+usage: "<gray>Usage: <white>/takeout test [ban [category]] <gray>| <white>unban <player> <gray>| <white>check <text> <gray>| <white>pack [player] <gray>| <white>reload"
+test-effect: "<gray>Playing the sound + image (no ban)."
+test-ban: "<yellow>Test ban: you will be banned for <white><duration> <yellow>(<reason>). Undo with <white>/takeout unban <name>"
+unbanned: "<green>Ran the unban command for <white><player><green>."
+category-missing: "<red>No category named <white><name>"
+pack-sent: "<green>Resource pack sent to <white><player><green>."
+pack-disabled: "<red>The resource pack is disabled or has no url in config.yml."
+player-not-found: "<red>Player not found: <white><player>"
+check-clean: "<green>Nothing in that text would be filtered."
+check-hit: "<red>Would be filtered: <yellow><category> <gray>(<white><match><gray>) -> ban <white><duration> <gray>for <white><reason>"
